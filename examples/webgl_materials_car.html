@@ -78,21 +78,16 @@
 				container.appendChild( renderer.domElement );
 
 				window.addEventListener( 'resize', onWindowResize );
-
 				stats = new Stats();
 				container.appendChild( stats.dom );
-
 				//
-
 				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 100 );
 				camera.position.set( 4.25, 1.4, - 4.5 );
-
 				controls = new OrbitControls( camera, container );
 				controls.enableDamping = true;
 				controls.maxDistance = 9;
 				controls.target.set( 0, 0.5, 0 );
 				controls.update();
-
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x333333 );
 				scene.environment = new RGBELoader().load( 'textures/equirectangular/venice_sunset_1k.hdr' );
@@ -106,38 +101,27 @@
 				scene.add( grid );
 
 				// materials
-
 				const bodyMaterial = new THREE.MeshPhysicalMaterial( {
 					color: 0xff0000, metalness: 1.0, roughness: 0.5, clearcoat: 1.0, clearcoatRoughness: 0.03, sheen: 0.5
 				} );
-
 				const detailsMaterial = new THREE.MeshStandardMaterial( {
 					color: 0xffffff, metalness: 1.0, roughness: 0.5
 				} );
-
 				const glassMaterial = new THREE.MeshPhysicalMaterial( {
 					color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
 				} );
-
 				const bodyColorInput = document.getElementById( 'body-color' );
 				bodyColorInput.addEventListener( 'input', function () {
-
 					bodyMaterial.color.set( this.value );
-
 				} );
-
 				const detailsColorInput = document.getElementById( 'details-color' );
 				detailsColorInput.addEventListener( 'input', function () {
-
 					detailsMaterial.color.set( this.value );
-
 				} );
 
 				const glassColorInput = document.getElementById( 'glass-color' );
 				glassColorInput.addEventListener( 'input', function () {
-
 					glassMaterial.color.set( this.value );
-
 				} );
 
 				// Car
@@ -154,7 +138,6 @@
 					carModel.getObjectByName( 'rim_rr' ).material = detailsMaterial;
 					carModel.getObjectByName( 'rim_rl' ).material = detailsMaterial;
 					carModel.getObjectByName( 'trim' ).material = detailsMaterial;
-
 					carModel.getObjectByName( 'glass' ).material = glassMaterial;
 					wheels.push(
 						carModel.getObjectByName( 'wheel_fl' ),
@@ -162,7 +145,6 @@
 						carModel.getObjectByName( 'wheel_rl' ),
 						carModel.getObjectByName( 'wheel_rr' )
 					);
-
 					// shadow
 					const mesh = new THREE.Mesh(
 						new THREE.PlaneGeometry( 0.655 * 4, 1.3 * 4 ),
@@ -175,18 +157,13 @@
 					carModel.add( mesh );
 
 					scene.add( carModel );
-
-				} );
-
+				});
 			}
 
 			function onWindowResize() {
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-
 				renderer.setSize( window.innerWidth, window.innerHeight );
-
 			}
 
 			function render() {

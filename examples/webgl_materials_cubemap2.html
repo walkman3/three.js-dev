@@ -27,19 +27,12 @@
 					"three": "../build/three.module.js"
 				}
 			}
-
-
-
-
-
 </script>
 
 <script type="module">
 
 	import * as THREE from 'three';
-
 	import Stats from './jsm/libs/stats.module.js';
-
 	import {OrbitControls} from './jsm/controls/OrbitControls.js';
 	import {OBJLoader} from './jsm/loaders/OBJLoader.js';
 
@@ -51,8 +44,6 @@
 	animate();
 
 	function init() {
-
-
 		var container = document.getElementById('container');
 		renderer = new THREE.WebGLRenderer();
 		renderer.setPixelRatio(window.devicePixelRatio);
@@ -63,7 +54,7 @@
 		camera.position.set(0, 0, 0);
 
 		var material = new THREE.MeshBasicMaterial();
-		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama2.jpg');
 
 		var skyBox = new THREE.Mesh(
 				new THREE.SphereBufferGeometry(100, 100, 100),
