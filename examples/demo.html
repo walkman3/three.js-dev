@@ -84,6 +84,7 @@
 		gui = new GUI({width: 315});
 		const sceneFolder = gui.addFolder('Scene');
 		scene.userData.sceneIndex = currentSceneIndex;
+		console.log("scene.userData==============>",scene.userData)
 		sceneFolder.add(scene.userData, 'sceneIndex', {
 			'Electric Cones': 0,
 			'Plasma Ball': 1,

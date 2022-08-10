@@ -97,62 +97,39 @@
 
 				const loader = new GLTFLoader();
 				loader.load( 'models/gltf/Xbot.glb', function ( gltf ) {
-
 					model = gltf.scene;
 					scene.add( model );
-
 					model.traverse( function ( object ) {
-
 						if ( object.isMesh ) object.castShadow = true;
-
 					} );
-
 					skeleton = new THREE.SkeletonHelper( model );
 					skeleton.visible = false;
 					scene.add( skeleton );
-
 					const animations = gltf.animations;
 					mixer = new THREE.AnimationMixer( model );
-
 					numAnimations = animations.length;
-
 					for ( let i = 0; i !== numAnimations; ++ i ) {
-
 						let clip = animations[ i ];
 						const name = clip.name;
-
 						if ( baseActions[ name ] ) {
-
 							const action = mixer.clipAction( clip );
 							activateAction( action );
 							baseActions[ name ].action = action;
 							allActions.push( action );
-
 						} else if ( additiveActions[ name ] ) {
-
 							// Make the clip additive and remove the reference frame
-
 							THREE.AnimationUtils.makeClipAdditive( clip );
-
 							if ( clip.name.endsWith( '_pose' ) ) {
-
 								clip = THREE.AnimationUtils.subclip( clip, clip.name, 2, 3, 30 );
-
 							}
-
 							const action = mixer.clipAction( clip );
 							activateAction( action );
 							additiveActions[ name ].action = action;
 							allActions.push( action );
-
 						}
-
 					}
-
 					createPanel();
-
 					animate();
-
 				} );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -161,7 +138,6 @@
 				renderer.outputEncoding = THREE.sRGBEncoding;
 				renderer.shadowMap.enabled = true;
 				container.appendChild( renderer.domElement );
-
 				// camera
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
 				camera.position.set( - 1, 2, 3 );
@@ -171,26 +147,19 @@
 				controls.enableZoom = false;
 				controls.target.set( 0, 1, 0 );
 				controls.update();
-
 				stats = new Stats();
 				container.appendChild( stats.dom );
-
 				window.addEventListener( 'resize', onWindowResize );
-
 			}
 
 			function createPanel() {
-
 				const panel = new GUI( { width: 310 } );
-
 				const folder1 = panel.addFolder( 'Base Actions' );
 				const folder2 = panel.addFolder( 'Additive Action Weights' );
 				const folder3 = panel.addFolder( 'General Speed' );
-
 				panelSettings = {
 					'modify time scale': 1.0
 				};
-
 				const baseNames = [ 'None', ...Object.keys( baseActions ) ];
 
 				for ( let i = 0, l = baseNames.length; i !== l; ++ i ) {
@@ -280,40 +249,23 @@
 
 				// If the current action is 'idle', execute the crossfade immediately;
 				// else wait until the current action has finished its current loop
-
 				if ( currentBaseAction === 'idle' || ! startAction || ! endAction ) {
-
 					executeCrossFade( startAction, endAction, duration );
-
 				} else {
-
 					synchronizeCrossFade( startAction, endAction, duration );
-
 				}
-
 				// Update control colors
-
 				if ( endAction ) {
-
 					const clip = endAction.getClip();
 					currentBaseAction = clip.name;
-
 				} else {
-
 					currentBaseAction = 'None';
-
 				}
-
 				crossFadeControls.forEach( function ( control ) {
-
 					const name = control.property;
-
 					if ( name === currentBaseAction ) {
-
 						control.setActive();
-
 					} else {
-
 						control.setInactive();
 
 					}

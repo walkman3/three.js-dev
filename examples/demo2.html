@@ -4,16 +4,11 @@
 	<title>three.js webgl - lightning strike</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<link type="text/css" rel="stylesheet" href="main.css">
+<!--	<link type="text/css" rel="stylesheet" href="main.css">-->
 </head>
 <body>
 
 <div id="container"></div>
-<div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - lightning strike</div>
-
-<!-- Import maps polyfill -->
-<!-- Remove this when import maps will be widely supported -->
-<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
 
 <script type="importmap">
 			{
@@ -21,36 +16,21 @@
 					"three": "../build/three.module.js"
 				}
 			}
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 <script type="module">
 
 	import * as THREE from 'three';
 	import Stats from './jsm/libs/stats.module.js';
 	import {GUI} from './jsm/libs/lil-gui.module.min.js';
-	import {OrbitControls} from './jsm/controls/OrbitControls.js';
-	import {GLTFLoader} from './jsm/loaders/GLTFLoader.js';
-	import {DRACOLoader} from './jsm/loaders/DRACOLoader.js';
-	import {RGBELoader} from './jsm/loaders/RGBELoader.js';
 
 	let container, stats;
-	let scene, camera, renderer, controls, gui, params = {};
+	let scene, camera, renderer, controls, gui ;
 	let currentSceneIndex = 0;
+	let dropdown = {state: '场景一'};
 	const sceneCreators = [
 		createConesScene,
-		createPlasmaBallScene
+		createPlasmaBallScene,
+		createtest
 	];
 	const clock = new THREE.Clock();
 	init();
@@ -61,7 +41,6 @@
 		renderer = new THREE.WebGLRenderer();
 		renderer.setPixelRatio(window.devicePixelRatio);
 		renderer.setSize(window.innerWidth, window.innerHeight);
-		params.sceneIndex = 0
 		renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild(renderer.domElement);
 		stats = new Stats();
@@ -80,7 +59,6 @@
 		camera.updateProjectionMatrix();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
-
 	//
 	function createGUI() {
 		if (gui) {
@@ -88,25 +66,22 @@
 		}
 		gui = new GUI({width: 315});
 		var sceneFolder = gui.addFolder('Scene');
-		var scene = ['场景一', '场景二', '场景三']
-		var initScene = {state: '场景一'};
+		//选项
+		var states = ['场景一', '场景二', '场景三'];
 		// 添加
-		var clipCtrl = sceneFolder.add(initScene, 'state').options(scene);
+		var clipCtrl = sceneFolder.add(dropdown, 'state').options(states);
 		// 设置点击事件
 		clipCtrl.onChange(function (value) {
-			console.log("===============>", value)
-			alert("使用说明");
+			if (value === '场景一') {
+				currentSceneIndex = 0;
+			} else if (value === '场景二') {
+				currentSceneIndex = 1;
+			} else if (value === '场景三') {
+				currentSceneIndex = 2;
+			}
+			dropdown.state = value
 			createScene();
 		});
-
-		// sceneFolder.add(params, 'sceneIndex', {
-		// 	'外部': 0,
-		// 	'内饰': 1,
-		// }).name('Scene').onChange(function (value) {
-		// 	currentSceneIndex = value;
-		// 	params.sceneIndex = value;
-		//
-		// });
 	}
 
 	function animate() {
@@ -117,56 +92,179 @@
 	//
 	function createConesScene() {
 		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+		camera.position.set(0, 0, 0);
 
-		//创建网格模型
-		// var geometry = new THREE.SphereGeometry(60, 40, 40); //创建一个球体几何对象
-		var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象
-		var material = new THREE.MeshLambertMaterial({       //创建材质对象Material
-			color: 0x008080   //立方体的颜色
-		});
-		var mesh = new THREE.Mesh(geometry, material); //创建网格模型对象Mesh
-		scene.add(mesh);   //将网格mesh模型添加到场景中
+		var material = new THREE.MeshBasicMaterial();
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama4.jpg');
+		var skyBox = new THREE.Mesh(
+				new THREE.SphereBufferGeometry(100, 100, 100),
+				material
+		);
+		skyBox.geometry.scale(1, 1, -1);
+		scene.add(skyBox);
+		window.addEventListener('resize', onWindowResize, false);
 
-		// 光源设置
-
-		//点光源
-		var point = new THREE.PointLight(0xffffff);
-		point.position.set(400, 200, 300); //点光源的位置
-		scene.add(point); //点光源添加到场景中
-		//环境光
-		var ambient = new THREE.AmbientLight(0x444444);
-		scene.add(ambient);
-		// console.log(scene)
-		// console.log(scene.children)
-
-		// 相机设置
-
-		var width = window.innerWidth; //窗口宽度
-		var height = window.innerHeight; //窗口高度
-		var k = width / height; //窗口宽高比
-		var s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
-		//创建相机对象
-		camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-		camera.position.set(200, 300, 200); //设置相机位置
-		camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+		var bMouseDown = false;
+		var x = -1;
+		var y = -1;
+		container.onmousedown = function (event) {
+			event.preventDefault();
+			x = event.clientX;
+			y = event.clientY;
+			bMouseDown = true;
+		}
+		container.onmouseup = function (event) {
+			event.preventDefault();
+			bMouseDown = false;
+		}
+		container.onmousemove = function (event) {
+			event.preventDefault();
+			if (bMouseDown) {
+				skyBox.rotation.y += -0.005 * (event.clientX - x);
+				skyBox.rotation.x += -0.005 * (event.clientY - y);
+				if (skyBox.rotation.x > Math.PI / 2) {
+					skyBox.rotation.x = Math.PI / 2
+				}
+				if (skyBox.rotation.x < -Math.PI / 2) {
+					skyBox.rotation.x = -Math.PI / 2
+				}
+				x = event.clientX;
+				y = event.clientY;
+			}
+		}
+		container.onmousewheel = function (event) {
+			event.preventDefault();
+			if (event.wheelDelta !== 0) {
+				camera.fov += event.wheelDelta > 0 ? 1 : -1;
+				if (camera.fov > 150) {
+					camera.fov = 150;
+				} else if (camera.fov < 30) {
+					camera.fov = 30;
+				}
+				camera.updateProjectionMatrix();
+			}
+		}
+		return scene;
 	}
 
 	//
 	function createPlasmaBallScene() {
-		const scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 100, 50000);
-		const ballScene = new THREE.Scene();
-		ballScene.background = new THREE.Color(0x454545);
-		// Lights
-		const ambientLight = new THREE.AmbientLight(0x444444);
-		ballScene.add(ambientLight);
-		scene.add(ambientLight);
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+		camera.position.set(0, 0, 0);
 
-		const light1 = new THREE.DirectionalLight(0xffffff, 0.5);
-		light1.position.set(1, 1, 1);
-		ballScene.add(light1);
-		scene.add(light1);
+		var material = new THREE.MeshBasicMaterial();
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
 
+		var skyBox = new THREE.Mesh(
+				new THREE.SphereBufferGeometry(100, 100, 100),
+				material
+		);
+		skyBox.geometry.scale(1, 1, -1);
+		scene.add(skyBox);
+
+		window.addEventListener('resize', onWindowResize, false);
+
+		var bMouseDown = false;
+		var x = -1;
+		var y = -1;
+		container.onmousedown = function (event) {
+			event.preventDefault();
+			x = event.clientX;
+			y = event.clientY;
+			bMouseDown = true;
+		}
+		container.onmouseup = function (event) {
+			event.preventDefault();
+			bMouseDown = false;
+		}
+		container.onmousemove = function (event) {
+			event.preventDefault();
+			if (bMouseDown) {
+				skyBox.rotation.y += -0.005 * (event.clientX - x);
+				skyBox.rotation.x += -0.005 * (event.clientY - y);
+				if (skyBox.rotation.x > Math.PI / 2) {
+					skyBox.rotation.x = Math.PI / 2
+				}
+				if (skyBox.rotation.x < -Math.PI / 2) {
+					skyBox.rotation.x = -Math.PI / 2
+				}
+				x = event.clientX;
+				y = event.clientY;
+			}
+		}
+		container.onmousewheel = function (event) {
+			event.preventDefault();
+			if (event.wheelDelta !== 0) {
+				camera.fov += event.wheelDelta > 0 ? 1 : -1;
+				if (camera.fov > 150) {
+					camera.fov = 150;
+				} else if (camera.fov < 30) {
+					camera.fov = 30;
+				}
+				camera.updateProjectionMatrix();
+			}
+		}
+		return scene;
+	}
+
+	function createtest() {
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+		camera.position.set(0, 0, 0);
+
+		var material = new THREE.MeshBasicMaterial();
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama3.jpg');
+ 		var skyBox = new THREE.Mesh(
+				new THREE.SphereBufferGeometry(100, 100, 100),
+				material
+		);
+		skyBox.geometry.scale(1, 1, -1);
+		scene.add(skyBox);
+
+		window.addEventListener('resize', onWindowResize, false);
+
+		var bMouseDown = false;
+		var x = -1;
+		var y = -1;
+		container.onmousedown = function (event) {
+			event.preventDefault();
+			x = event.clientX;
+			y = event.clientY;
+			bMouseDown = true;
+		}
+		container.onmouseup = function (event) {
+			event.preventDefault();
+			bMouseDown = false;
+		}
+		container.onmousemove = function (event) {
+			event.preventDefault();
+			if (bMouseDown) {
+				skyBox.rotation.y += -0.005 * (event.clientX - x);
+				skyBox.rotation.x += -0.005 * (event.clientY - y);
+				if (skyBox.rotation.x > Math.PI / 2) {
+					skyBox.rotation.x = Math.PI / 2
+				}
+				if (skyBox.rotation.x < -Math.PI / 2) {
+					skyBox.rotation.x = -Math.PI / 2
+				}
+				x = event.clientX;
+				y = event.clientY;
+			}
+		}
+		container.onmousewheel = function (event) {
+			event.preventDefault();
+			if (event.wheelDelta !== 0) {
+				camera.fov += event.wheelDelta > 0 ? 1 : -1;
+				if (camera.fov > 150) {
+					camera.fov = 150;
+				} else if (camera.fov < 30) {
+					camera.fov = 30;
+				}
+				camera.updateProjectionMatrix();
+			}
+		}
 		return scene;
 	}
 </script>

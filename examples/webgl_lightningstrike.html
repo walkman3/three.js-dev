@@ -83,6 +83,7 @@
 				gui = new GUI( { width: 315 } );
 				const sceneFolder = gui.addFolder( 'Scene' );
 				scene.userData.sceneIndex = currentSceneIndex;
+				console.log("scene=================>",scene)
 				sceneFolder.add( scene.userData, 'sceneIndex', { 'Electric Cones': 0, 'Plasma Ball': 1, 'Storm': 2 } ).name( 'Scene' ).onChange( function ( value ) {
 					currentSceneIndex = value;
 					createScene();

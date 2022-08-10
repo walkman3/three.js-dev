@@ -121,85 +121,54 @@
 			}
 
 			function onWindowResize() {
-
 				const width = window.innerWidth;
 				const height = window.innerHeight;
-
 				perpCamera.aspect = width / height;
 				perpCamera.updateProjectionMatrix();
-
 				renderer.setSize( width, height );
 				render();
 
 			}
 
 			function render() {
-
 				renderer.clear();
 				renderer.render( scene, perpCamera );
 				renderer.render( uiScene, orthoCamera );
-
 			}
 
 			function loadModel( ) {
-
 				const loader = new THREE.BufferGeometryLoader();
 				loader.load( 'models/json/pressure.json', function ( geometry ) {
-
 					geometry.center();
 					geometry.computeVertexNormals();
-
 					// default color attribute
 					const colors = [];
-
 					for ( let i = 0, n = geometry.attributes.position.count; i < n; ++ i ) {
-
 						colors.push( 1, 1, 1 );
-
 					}
-
 					geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-
 					mesh.geometry = geometry;
 					updateColors();
-
 					render();
-
 				} );
-
 			}
-
 			function updateColors() {
-
 				lut.setColorMap( params.colorMap );
-
 				lut.setMax( 2000 );
 				lut.setMin( 0 );
-
 				const geometry = mesh.geometry;
 				const pressures = geometry.attributes.pressure;
 				const colors = geometry.attributes.color;
-
 				for ( let i = 0; i < pressures.array.length; i ++ ) {
-
 					const colorValue = pressures.array[ i ];
-
 					const color = lut.getColor( colorValue );
-
 					if ( color === undefined ) {
-
 						console.log( 'Unable to determine color for value:', colorValue );
-
 					} else {
-
 						colors.setXYZ( i, color.r, color.g, color.b );
-
 					}
-
 				}
-
 				colors.needsUpdate = true;
-
 				const map = sprite.material.map;
 				lut.updateCanvas( map.image );
 				map.needsUpdate = true;

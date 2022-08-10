@@ -38,7 +38,6 @@
 
 	let container, stats;
 	let camera, scene, renderer;
-	let pointLight;
 
 	init();
 	animate();
@@ -54,7 +53,7 @@
 		camera.position.set(0, 0, 0);
 
 		var material = new THREE.MeshBasicMaterial();
-		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama2.jpg');
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
 
 		var skyBox = new THREE.Mesh(
 				new THREE.SphereBufferGeometry(100, 100, 100),
