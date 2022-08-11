@@ -29,11 +29,10 @@
 <script type="module">
 
 	import * as THREE from 'three';
-	import Stats from './jsm/libs/stats.module.js';
 	import {GUI} from './jsm/libs/lil-gui.module.min.js';
 	import {OrbitControls} from './jsm/controls/OrbitControls.js';
 
-	let container, stats;
+	let container;
 	let scene, camera, renderer, controls, gui;
 	let currentSceneIndex = 0;
 	let dropdown = {state: '场景一'};
@@ -56,10 +55,8 @@
 		renderer.toneMappingExposure = 0.85;
 
 		container.appendChild(renderer.domElement);
-		stats = new Stats();
-		container.appendChild(stats.dom);
-		window.addEventListener('resize', onWindowResize);
 		createScene();
+		window.addEventListener('resize', onWindowResize);
 	}
 
 	function createScene() {
@@ -70,12 +67,18 @@
 
 	// controls
 	function createControls() {
-		controls = new OrbitControls(camera, container);
-		// const controls = new OrbitControls( camera, renderer.domElement );
-		controls.enableZoom = false;
-		controls.enablePan = false;
+		console.log("===============createControls=============>")
+		controls = new OrbitControls(camera, renderer.domElement);
+		// controls = new OrbitControls(camera, renderer.domElement);
+		controls.enableZoom = false;//是否启用相机缩放功能
+		controls.enablePan = false;//是否可以在场景平移对象
 		controls.minPolarAngle = Math.PI / 4;
 		controls.maxPolarAngle = Math.PI / 1.5;
+		controls.autoRotate = false//相机发生自转
+		controls.enableRotate = true;//Boolean  是否启用相机旋转功能
+		// controls.addEventListener('change', renderer);
+		// controls.minDistance = 10;
+		// controls.maxDistance = 50;
 	}
 
 	function onWindowResize() {
@@ -110,15 +113,16 @@
 	}
 
 	function animate() {
-		controls.update();
 		requestAnimationFrame(animate);
 		renderer.render(scene, camera);
+		controls.update();
 	}
+
 	//
 	function createConesScene() {
 		scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
-		camera.position.set(0, 0, 0);
+		camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+		camera.position.z = 20;
 
 		var material = new THREE.MeshBasicMaterial();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama4.jpg');
@@ -128,7 +132,7 @@
 		);
 		skyBox.geometry.scale(1, 1, -1);
 		scene.add(skyBox);
-		window.addEventListener('resize', onWindowResize, false);
+		// window.addEventListener('resize', onWindowResize, false);
 
 		var bMouseDown = false;
 		var x = -1;
@@ -176,8 +180,8 @@
 	//
 	function createPlasmaBallScene() {
 		scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
-		camera.position.set(0, 0, 0);
+		camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+		camera.position.z = 20;
 
 		var material = new THREE.MeshBasicMaterial();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
@@ -189,7 +193,7 @@
 		skyBox.geometry.scale(1, 1, -1);
 		scene.add(skyBox);
 
-		window.addEventListener('resize', onWindowResize, false);
+		// window.addEventListener('resize', onWindowResize, false);
 
 		var bMouseDown = false;
 		var x = -1;
@@ -236,8 +240,8 @@
 
 	function createtest() {
 		scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
-		camera.position.set(0, 0, 0);
+		camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+		camera.position.z = 20;
 
 		var material = new THREE.MeshBasicMaterial();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama3.jpg');
@@ -249,7 +253,7 @@
 		skyBox.geometry.scale(1, 1, -1);
 		scene.add(skyBox);
 
-		window.addEventListener('resize', onWindowResize, false);
+		// window.addEventListener('resize', onWindowResize, false);
 
 		var bMouseDown = false;
 		var x = -1;

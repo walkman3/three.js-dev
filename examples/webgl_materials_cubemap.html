@@ -9,10 +9,10 @@
 	<body>
 
 		<div id="container"></div>
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - cube mapping demo.<br />
-			Texture by <a href="http://www.humus.name/index.php?page=Textures" target="_blank" rel="noopener">Humus</a>, Walt Disney head by <a href="http://web.archive.org/web/20120903131400/http://davidoreilly.com/post/18087489343/disneyhead" target="_blank" rel="noopener">David OReilly</a>
-		</div>
+<!--		<div id="info">-->
+<!--			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - cube mapping demo.<br />-->
+<!--			Texture by <a href="http://www.humus.name/index.php?page=Textures" target="_blank" rel="noopener">Humus</a>, Walt Disney head by <a href="http://web.archive.org/web/20120903131400/http://davidoreilly.com/post/18087489343/disneyhead" target="_blank" rel="noopener">David OReilly</a>-->
+<!--		</div>-->
 
 		<!-- Import maps polyfill -->
 		<!-- Remove this when import maps will be widely supported -->
@@ -40,10 +40,17 @@
 			init();
 			animate();
 			function init() {
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+				// container = document.createElement( 'div' );
+				// document.body.appendChild( container );
+
+				container = document.getElementById('container');
+
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
 				camera.position.z = 2000;
+
+				// camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+				// camera.position.set(0, 0, 0);
+
 				//cubemap
 				const path = 'textures/cube/SwedishRoyalCastle/';
 				const format = '.jpg';
@@ -97,8 +104,8 @@
 				controls.maxPolarAngle = Math.PI / 1.5;
 
 				//stats
-				stats = new Stats();
-				container.appendChild( stats.dom );
+				// stats = new Stats();
+				// container.appendChild( stats.dom );
 				window.addEventListener( 'resize', onWindowResize );
 			}
 			function onWindowResize() {
@@ -113,7 +120,7 @@
 			}
 			function render() {
 				renderer.render( scene, camera );
-				stats.update();
+				// stats.update();
 			}
 		</script>
 
