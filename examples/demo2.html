@@ -4,12 +4,21 @@
 	<title>three.js webgl - lightning strike</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-<!--	<link type="text/css" rel="stylesheet" href="main.css">-->
+	<!--	<link type="text/css" rel="stylesheet" href="main.css">-->
+	<style>
+		body {
+			margin: 0;
+			background-color: #000;
+			color: #fff;
+			font-family: Monospace;
+			font-size: 13px;
+			line-height: 24px;
+			overscroll-behavior: none;
+		}
+	</style>
 </head>
 <body>
-
 <div id="container"></div>
-
 <script type="importmap">
 			{
 				"imports": {
@@ -22,9 +31,10 @@
 	import * as THREE from 'three';
 	import Stats from './jsm/libs/stats.module.js';
 	import {GUI} from './jsm/libs/lil-gui.module.min.js';
+	import {OrbitControls} from './jsm/controls/OrbitControls.js';
 
 	let container, stats;
-	let scene, camera, renderer, controls, gui ;
+	let scene, camera, renderer, controls, gui;
 	let currentSceneIndex = 0;
 	let dropdown = {state: '场景一'};
 	const sceneCreators = [
@@ -42,6 +52,9 @@
 		renderer.setPixelRatio(window.devicePixelRatio);
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.outputEncoding = THREE.sRGBEncoding;
+		renderer.toneMapping = THREE.ACESFilmicToneMapping;
+		renderer.toneMappingExposure = 0.85;
+
 		container.appendChild(renderer.domElement);
 		stats = new Stats();
 		container.appendChild(stats.dom);
@@ -51,7 +64,18 @@
 
 	function createScene() {
 		sceneCreators[currentSceneIndex]();
+		createControls();
 		createGUI();
+	}
+
+	// controls
+	function createControls() {
+		controls = new OrbitControls(camera, container);
+		// const controls = new OrbitControls( camera, renderer.domElement );
+		controls.enableZoom = false;
+		controls.enablePan = false;
+		controls.minPolarAngle = Math.PI / 4;
+		controls.maxPolarAngle = Math.PI / 1.5;
 	}
 
 	function onWindowResize() {
@@ -59,6 +83,7 @@
 		camera.updateProjectionMatrix();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
+
 	//
 	function createGUI() {
 		if (gui) {
@@ -85,10 +110,10 @@
 	}
 
 	function animate() {
+		controls.update();
 		requestAnimationFrame(animate);
 		renderer.render(scene, camera);
 	}
-
 	//
 	function createConesScene() {
 		scene = new THREE.Scene();
@@ -216,7 +241,8 @@
 
 		var material = new THREE.MeshBasicMaterial();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama3.jpg');
- 		var skyBox = new THREE.Mesh(
+
+		var skyBox = new THREE.Mesh(
 				new THREE.SphereBufferGeometry(100, 100, 100),
 				material
 		);

@@ -167,23 +167,14 @@
 			}
 
 			function render() {
-
 				controls.update();
-
 				const time = - performance.now() / 1000;
-
 				for ( let i = 0; i < wheels.length; i ++ ) {
-
 					wheels[ i ].rotation.x = time * Math.PI * 2;
-
 				}
-
 				grid.position.z = - ( time ) % 1;
-
 				renderer.render( scene, camera );
-
 				stats.update();
-
 			}
 
 			init();
