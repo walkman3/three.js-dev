@@ -36,12 +36,19 @@
 <script type="module">
 
 	import * as THREE from 'three';
+	import {GUI} from './jsm/libs/lil-gui.module.min.js';
 	import {OrbitControls} from './jsm/controls/OrbitControls.js';
 
 	let container;
 	let scene, camera, renderer, controls, gui;
 	let currentSceneIndex = 0;
 
+	let dropdown = {state: '场景一'};
+	const sceneCreators = [
+		createConesScene,
+		createPlasmaBallScene,
+		createTest
+	];
 	const clock = new THREE.Clock();
 	let material = new THREE.MeshBasicMaterial();
 	init();
@@ -49,10 +56,15 @@
 
 	let btn = document.getElementById("front-row");
 	btn.onclick = function () {
+		// alert("你点击了前排哦！");
+		// currentSceneIndex = 0;
+		// createScene();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama4.jpg');
 	}
 	let btn2 = document.getElementById("back-row");
 	btn2.onclick = function () {
+		// currentSceneIndex = 1;
+		// createScene();
 		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
 	}
 
@@ -64,14 +76,16 @@
 		renderer.outputEncoding = THREE.sRGBEncoding;
 		renderer.toneMapping = THREE.ACESFilmicToneMapping;
 		renderer.toneMappingExposure = 0.85;
+
 		container.appendChild(renderer.domElement);
 		createScene();
 		window.addEventListener('resize', onWindowResize);
 	}
 
 	function createScene() {
-		createConesScene();
+		sceneCreators[currentSceneIndex]();
 		createControls();
+		// createGUI();
 	}
 
 	// controls
@@ -90,6 +104,31 @@
 		camera.updateProjectionMatrix();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
+
+	//
+	// function createGUI() {
+	// 	if (gui) {
+	// 		gui.destroy();
+	// 	}
+	// 	gui = new GUI({width: 315});
+	// 	var sceneFolder = gui.addFolder('Scene');
+	// 	//选项
+	// 	var states = ['场景一', '场景二', '场景三'];
+	// 	// 添加
+	// 	var clipCtrl = sceneFolder.add(dropdown, 'state').options(states);
+	// 	// 设置点击事件
+	// 	clipCtrl.onChange(function (value) {
+	// 		if (value === '场景一') {
+	// 			currentSceneIndex = 0;
+	// 		} else if (value === '场景二') {
+	// 			currentSceneIndex = 1;
+	// 		} else if (value === '场景三') {
+	// 			currentSceneIndex = 2;
+	// 		}
+	// 		dropdown.state = value
+	// 		createScene();
+	// 	});
+	// }
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -113,6 +152,41 @@
 		return scene;
 	}
 
+	//
+	function createPlasmaBallScene() {
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+		camera.position.z = 20;
+
+		var material = new THREE.MeshBasicMaterial();
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama.jpg');
+
+		var skyBox = new THREE.Mesh(
+				new THREE.SphereBufferGeometry(100, 100, 100),
+				material
+		);
+		skyBox.geometry.scale(1, 1, -1);
+		scene.add(skyBox);
+		return scene;
+	}
+
+	function createTest() {
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+		camera.position.z = 20;
+
+		var material = new THREE.MeshBasicMaterial();
+		material.map = new THREE.TextureLoader().load('textures/cube/SwedishRoyalCastle/panorama3.jpg');
+
+		var skyBox = new THREE.Mesh(
+				new THREE.SphereBufferGeometry(100, 100, 100),
+				material
+		);
+		skyBox.geometry.scale(1, 1, -1);
+		scene.add(skyBox);
+
+		return scene;
+	}
 </script>
 </body>
 </html>

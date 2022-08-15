@@ -46,43 +46,30 @@
 			import { Lut } from './jsm/math/Lut.js';
 
 			let container;
-
 			let perpCamera, orthoCamera, renderer, lut;
-
 			let mesh, sprite;
 			let scene, uiScene;
-
 			let params;
-
 			init();
-
 			function init() {
-
 				container = document.getElementById( 'container' );
-
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0xffffff );
-
 				uiScene = new THREE.Scene();
-
 				lut = new Lut();
-
 				const width = window.innerWidth;
 				const height = window.innerHeight;
-
 				perpCamera = new THREE.PerspectiveCamera( 60, width / height, 1, 100 );
 				perpCamera.position.set( 0, 0, 10 );
 				scene.add( perpCamera );
 
 				orthoCamera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 1, 2 );
 				orthoCamera.position.set( 0.5, 0, 1 );
-
 				sprite = new THREE.Sprite( new THREE.SpriteMaterial( {
 					map: new THREE.CanvasTexture( lut.createCanvas() )
 				} ) );
 				sprite.scale.x = 0.125;
 				uiScene.add( sprite );
-
 				mesh = new THREE.Mesh( undefined, new THREE.MeshLambertMaterial( {
 					side: THREE.DoubleSide,
 					color: 0xF5F5F5,
@@ -94,7 +81,6 @@
 					colorMap: 'rainbow',
 				};
 				loadModel( );
-
 				const pointLight = new THREE.PointLight( 0xffffff, 1 );
 				perpCamera.add( pointLight );
 
@@ -103,21 +89,15 @@
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( width, height );
 				container.appendChild( renderer.domElement );
-
 				window.addEventListener( 'resize', onWindowResize );
-
 				const controls = new OrbitControls( perpCamera, renderer.domElement );
 				controls.addEventListener( 'change', render );
 
 				const gui = new GUI();
-
 				gui.add( params, 'colorMap', [ 'rainbow', 'cooltowarm', 'blackbody', 'grayscale' ] ).onChange( function () {
-
 					updateColors();
 					render();
-
-				} );
-
+				});
 			}
 
 			function onWindowResize() {
@@ -174,8 +154,6 @@
 				map.needsUpdate = true;
 
 			}
-
 		</script>
-
 	</body>
 </html>
